@@ -10,6 +10,35 @@ GO
 USE [Shop];
 GO
 
+-------------------------------------------------------Clear foreign keys------------------------------------------------
+
+DECLARE @Counter INT = 1, @sql VARCHAR(MAX)
+DECLARE @Foreign table
+(
+	Counter INT IDENTITY(1,1),
+	Text1 VARCHAR(200),
+	Text2 VARCHAR(200)
+)
+
+INSERT INTO @Foreign (Text1,Text2)
+SELECT 
+	FK.name, 
+	PFK.name AS parentTable
+FROM sys.foreign_keys FK
+INNER JOIN sys.objects PFK ON PFK.object_id = FK.parent_object_id
+INNER JOIN sys.objects RFK ON RFK.object_id = FK.referenced_object_id
+WHERE FK.schema_id in (SELECT schema_id FROM sys.schemas WHERE name in (N'dbo'))
+
+WHILE ((SELECT max(Counter) FROM @Foreign) >= @Counter)
+BEGIN
+	SET @sql = 'ALTER TABLE [dbo].[' + (SELECT MAX(Text2) FROM @Foreign WHERE Counter = @Counter) +
+			   '] DROP CONSTRAINT [' + (SELECT MAX(Text1) FROM @Foreign WHERE Counter = @Counter) + ']'
+	
+	EXEC(@sql)
+	SET @Counter = @Counter + 1;
+END
+GO
+
 -----------------------------------------------------------------------Table dbo.User------------------------------------------------------------------
 SET ANSI_NULLS ON
 GO
@@ -182,28 +211,35 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Transaction_UserId_User_UserId]') AND parent_object_id = OBJECT_ID('[dbo].[Transaction]'))
 BEGIN
 	ALTER TABLE [dbo].[Transaction] WITH CHECK ADD CONSTRAINT [FK_Transaction_UserId_User_UserId] FOREIGN KEY ([UserId])
-	REFERENCES [dbo].[User] ([UserId]);
+	REFERENCES [dbo].[User] ([UserId])
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Transaction_FranchiseId_Franchise_FranchiseId]') AND parent_object_id = OBJECT_ID('[dbo].[Transaction]'))
 BEGIN
 	ALTER TABLE [dbo].[Transaction] WITH CHECK ADD CONSTRAINT [FK_Transaction_FranchiseId_Franchise_FranchiseId] FOREIGN KEY ([FranchiseId])
-	REFERENCES [dbo].[Franchise] ([FranchiseId]);
+	REFERENCES [dbo].[Franchise] ([FranchiseId])
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_TransactionDetail_TransactionId_Transaction_TransactionId]') AND parent_object_id = OBJECT_ID('[dbo].[TransactionDetail]'))
 BEGIN
 	ALTER TABLE [dbo].[TransactionDetail] WITH CHECK ADD CONSTRAINT [FK_TransactionDetail_TransactionId_Transaction_TransactionId] FOREIGN KEY ([TransactionId])
-	REFERENCES [dbo].[Transaction] ([TransactionId]);
+	REFERENCES [dbo].[Transaction] ([TransactionId])
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
 END
 GO
-
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_TransactionDetail_ProductId_Product_ProductId]') AND parent_object_id = OBJECT_ID('[dbo].[TransactionDetail]'))
 BEGIN
 	ALTER TABLE [dbo].[TransactionDetail] WITH CHECK ADD CONSTRAINT [FK_TransactionDetail_ProductId_Product_ProductId] FOREIGN KEY ([ProductId])
-	REFERENCES [dbo].[Product] ([ProductId]);
+	REFERENCES [dbo].[Product] ([ProductId])
+	ON UPDATE CASCADE
+	ON DELETE CASCADE;
 END
 GO

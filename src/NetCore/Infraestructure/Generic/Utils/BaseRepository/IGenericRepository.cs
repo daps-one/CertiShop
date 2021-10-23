@@ -4,21 +4,21 @@ using System.Threading.Tasks;
 
 namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
 {
-    public interface IGenericRepository<TModel, T>
-        where T : class
-        where TModel : DbContext
+    public interface IGenericRepository<TContext, TModel>
+        where TModel : class
+        where TContext : DbContext
     {
-        IEnumerable<T> GetAll(bool isNoTracking = false);
-        Task<IEnumerable<T>> GetAllAsync(bool isNoTracking = false);
-        T Get(object id, bool isAsNoTracking = false);
-        Task<T> GetAsync(object id, bool isAsNoTracking = false);
-        T Insert(T entity);
-        void InsertRange(params T[] entities);
-        Task<T> InsertAsync(T entity);
-        Task InsertRangeAsync(params T[] entities);
-        T Update(T entity);
-        void UpdateRange(params T[] entities);
-        T Delete(T entity);
-        void DeleteRange(params T[] entities);
+        IEnumerable<TModel> GetAll(bool isNoTracking = false);
+        Task<IEnumerable<TModel>> GetAllAsync(bool isNoTracking = false);
+        TModel Get(object id, bool isAsNoTracking = false);
+        Task<TModel> GetAsync(object id, bool isAsNoTracking = false);
+        TModel Insert(TModel entity);
+        void InsertRange(params TModel[] entities);
+        Task<TModel> InsertAsync(TModel entity);
+        Task InsertRangeAsync(params TModel[] entities);
+        TModel Update(TModel entity);
+        void UpdateRange(params TModel[] entities);
+        TModel Delete(TModel entity);
+        void DeleteRange(params TModel[] entities);
     }
 }

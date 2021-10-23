@@ -13,10 +13,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Products
+namespace CertiShop.NetCore.Services.Products
 {
     public class Startup
     {
+        private const string ORIGIN = "_origin";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +33,15 @@ namespace Products
             services.AddControllers();
             services.AddSqlServerContext();
             services.AddUnitOfWork();
+            services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: ORIGIN,
+                    builder =>
+                    {
+                        builder.WithOrigins("https://localhost:5001");
+                    });
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Products", Version = "v1" });
@@ -53,6 +64,7 @@ namespace Products
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors(ORIGIN);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

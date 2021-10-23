@@ -58,7 +58,7 @@ DECLARE @Product_Temp TABLE
 	[Amount] [int] NOT NULL
 );
 
-INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (1, 'Licencia Office 365 x 2 año', NULL, 200000, NULL, 520);
+INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (1, 'Licencia Office 365 x 2 año', NULL, 200000, NULL, 0);
 INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (2, 'Monitor AOC 24 pulgadas', NULL, 135250, NULL, 24);
 INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (3, 'Mouse inalámbrico logitech', NULL, 27500, NULL, 57);
 INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (4, 'Teclado mecanico redragon', NULL, 149900, NULL, 12);

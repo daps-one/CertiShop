@@ -6,24 +6,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
 {
-    public class GenericRepository<TModel, T> : IGenericRepository<TModel, T>
-        where T : class
-        where TModel : DbContext
+    public class GenericRepository<TContext, TModel> : IGenericRepository<TContext, TModel>
+        where TModel : class
+        where TContext : DbContext
     {
-        private readonly IUnitOfWork<TModel> _unitOfWork;
+        protected readonly IUnitOfWork<TContext> _unitOfWork;
 
-        public GenericRepository(IUnitOfWork<TModel> unitOfWork) => _unitOfWork = unitOfWork;
+        public GenericRepository(IUnitOfWork<TContext> unitOfWork) => _unitOfWork = unitOfWork;
 
         private void QueryTracking(bool isAsNoTracking)
         {
             _unitOfWork.Context.ChangeTracker.QueryTrackingBehavior = isAsNoTracking ? QueryTrackingBehavior.NoTracking : QueryTrackingBehavior.TrackAll;
         }
 
-        public T Delete(T entity)
+        public TModel Delete(TModel entity)
         {
             try
             {
-                return _unitOfWork.Context.Set<T>().Remove(entity).Entity;
+                return _unitOfWork.Context.Set<TModel>().Remove(entity).Entity;
             }
             catch (Exception)
             {
@@ -32,12 +32,12 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public T Get(object id, bool isAsNoTracking = false)
+        public TModel Get(object id, bool isAsNoTracking = false)
         {
             try
             {
                 QueryTracking(isAsNoTracking);
-                return _unitOfWork.Context.Set<T>().Find(id);
+                return _unitOfWork.Context.Set<TModel>().Find(id);
             }
             catch (Exception)
             {
@@ -46,12 +46,12 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public IEnumerable<T> GetAll(bool isAsNoTracking = false)
+        public IEnumerable<TModel> GetAll(bool isAsNoTracking = false)
         {
             try
             {
                 QueryTracking(isAsNoTracking);
-                return _unitOfWork.Context.Set<T>().ToList();
+                return _unitOfWork.Context.Set<TModel>().ToList();
             }
             catch (Exception)
             {
@@ -60,12 +60,12 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(bool isAsNoTracking = false)
+        public async Task<IEnumerable<TModel>> GetAllAsync(bool isAsNoTracking = false)
         {
             try
             {
                 QueryTracking(isAsNoTracking);
-                return await _unitOfWork.Context.Set<T>().ToListAsync();
+                return await _unitOfWork.Context.Set<TModel>().ToListAsync();
             }
             catch (Exception)
             {
@@ -74,12 +74,12 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public async Task<T> GetAsync(object id, bool isAsNoTracking = false)
+        public async Task<TModel> GetAsync(object id, bool isAsNoTracking = false)
         {
             try
             {
                 QueryTracking(isAsNoTracking);
-            return await _unitOfWork.Context.Set<T>().FindAsync(id);
+            return await _unitOfWork.Context.Set<TModel>().FindAsync(id);
             }
             catch (Exception)
             {
@@ -88,11 +88,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public T Insert(T entity)
+        public TModel Insert(TModel entity)
         {
             try
             {
-                return _unitOfWork.Context.Set<T>().Add(entity).Entity;
+                return _unitOfWork.Context.Set<TModel>().Add(entity).Entity;
             }
             catch (Exception)
             {
@@ -101,11 +101,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public async Task<T> InsertAsync(T entity)
+        public async Task<TModel> InsertAsync(TModel entity)
         {
             try
             {
-                return (await _unitOfWork.Context.Set<T>().AddAsync(entity)).Entity;
+                return (await _unitOfWork.Context.Set<TModel>().AddAsync(entity)).Entity;
             }
             catch (Exception)
             {
@@ -114,11 +114,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public T Update(T entity)
+        public TModel Update(TModel entity)
         {
             try
             {
-                return _unitOfWork.Context.Set<T>().Update(entity).Entity;
+                return _unitOfWork.Context.Set<TModel>().Update(entity).Entity;
             }
             catch (Exception)
             {
@@ -127,11 +127,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public void InsertRange(params T[] entities)
+        public void InsertRange(params TModel[] entities)
         {
             try
             {
-                _unitOfWork.Context.Set<T>().AddRange(entities);
+                _unitOfWork.Context.Set<TModel>().AddRange(entities);
             }
             catch (Exception)
             {
@@ -140,11 +140,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public async Task InsertRangeAsync(params T[] entities)
+        public async Task InsertRangeAsync(params TModel[] entities)
         {
             try
             {
-                await _unitOfWork.Context.Set<T>().AddRangeAsync(entities);
+                await _unitOfWork.Context.Set<TModel>().AddRangeAsync(entities);
             }
             catch (Exception)
             {
@@ -153,11 +153,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public void UpdateRange(params T[] entities)
+        public void UpdateRange(params TModel[] entities)
         {
             try
             {
-                _unitOfWork.Context.Set<T>().UpdateRange(entities);
+                _unitOfWork.Context.Set<TModel>().UpdateRange(entities);
             }
             catch (Exception)
             {
@@ -166,11 +166,11 @@ namespace CertiShop.NetCore.Infraestructure.Generic.Utils.BaseRepository
             }
         }
 
-        public void DeleteRange(params T[] entities)
+        public void DeleteRange(params TModel[] entities)
         {
             try
             {
-                _unitOfWork.Context.Set<T>().RemoveRange(entities);
+                _unitOfWork.Context.Set<TModel>().RemoveRange(entities);
             }
             catch (Exception)
             {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CertiShop.NetCore.Services.Products.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/products")]
     public class ProductController : ControllerBase
     {
         private readonly IUnitOfWork<BaseDbContext> _unitOfWork;
@@ -24,12 +24,42 @@ namespace CertiShop.NetCore.Services.Products.Controllers
         {
             try
             {
-                var products = _productRepository.GetAll(isAsNoTracking: true);
+                var products = _productRepository.GetAllInStock();
                 return Ok(products);
             }
             catch (Exception)
             {
-                // TODO: 
+                // TODO: implementar log de errores.
+                return NotFound();
+            }
+        }
+
+        [HttpGet("{productId}")]
+        public IActionResult GetProduct(int productId)
+        {
+            try
+            {
+                var product = _productRepository.Get(productId);
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                // TODO: implementar log de errores.
+                return NotFound();
+            }
+        }
+
+        [HttpGet("addToCart/{productId}")]
+        public IActionResult AddProductToCart(int productId)
+        {
+            try
+            {
+                var product = _productRepository.AddProductToCart(productId);
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                // TODO: implementar log de errores.
                 return NotFound();
             }
         }

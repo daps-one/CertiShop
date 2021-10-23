@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Products
+namespace CertiShop.NetCore.Services.Products
 {
     public class Program
     {

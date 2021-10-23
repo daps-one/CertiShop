@@ -58,7 +58,7 @@ DECLARE @Product_Temp TABLE
 	[Amount] [int] NOT NULL
 );
 
-INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (1, 'Licencia Office 365 x 1 año', NULL, 200000, NULL, 520);
+INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (1, 'Licencia Office 365 x 2 año', NULL, 200000, NULL, 520);
 INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (2, 'Monitor AOC 24 pulgadas', NULL, 135250, NULL, 24);
 INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (3, 'Mouse inalámbrico logitech', NULL, 27500, NULL, 57);
 INSERT @Product_Temp ([ProductId], [Name], [Image], [UnitPrice], [Description], [Amount]) VALUES (4, 'Teclado mecanico redragon', NULL, 149900, NULL, 12);
@@ -99,12 +99,14 @@ THEN INSERT
 		[Ori].[Description], 
 		[Ori].[Amount]
 	)
-WHEN MATCHED 
-		AND TRIM([Des].[Name]) <> TRIM([Ori].[Name])
-		AND TRIM([Des].[Image]) <> TRIM([Ori].[Image])
-		AND [Des].[UnitPrice] <> [Ori].[UnitPrice]
-		AND TRIM([Des].[Description]) <> TRIM([Ori].[Description])
-		AND [Des].[Amount] <> [Ori].[Amount]
+WHEN MATCHED AND
+	(
+		TRIM([Des].[Name]) <> TRIM([Ori].[Name])
+		OR TRIM([Des].[Image]) <> TRIM([Ori].[Image])
+		OR [Des].[UnitPrice] <> [Ori].[UnitPrice]
+		OR TRIM([Des].[Description]) <> TRIM([Ori].[Description])
+		OR [Des].[Amount] <> [Ori].[Amount]
+	)
 	THEN UPDATE SET 
         [Des].[Name] = TRIM([Ori].[Name]),
         [Des].[Image] = TRIM([Ori].[Image]),

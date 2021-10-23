@@ -11,7 +11,6 @@ USE [Shop];
 GO
 
 -------------------------------------------------------Clear foreign keys------------------------------------------------
-
 DECLARE @Counter INT = 1, @sql VARCHAR(MAX)
 DECLARE @Foreign table
 (

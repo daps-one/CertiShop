@@ -1,0 +1,15 @@
+<mat-grid-list cols="3">
+  <mat-grid-tile *ngFor="let product of products">
+    <mat-card class="card-products">
+      <img mat-card-image src={{product.image}} alt="Photo of a Shiba Inu">
+      <mat-card-content>
+        <p>
+          {{product.name}}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button type="button" (click)="onAdd(product.productId)" mat-button>ADD</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>

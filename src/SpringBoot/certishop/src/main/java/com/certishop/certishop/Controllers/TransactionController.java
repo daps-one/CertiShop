@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.certishop.certishop.Repositories.*;
-import com.certishop.certishop.Repositories.TransactionRepository.ITransactionRepository;
 import com.certishop.certishop.Utils.Response;
 import com.certishop.certishop.Entities.Product;
 import com.certishop.certishop.Entities.Transactions;
@@ -24,9 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "https://localhost:4200")
 public class TransactionController {
 
-    private final ITransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final TransactionDetailRepository transactionDetailRepository;
@@ -34,7 +34,7 @@ public class TransactionController {
     private final Integer maxTotalPriceTransaction = 10000000;
     private final Integer maxTodayPriceTransaction = 5000000;
 
-    public TransactionController(ITransactionRepository transactionRepository, ProductRepository productRepository,
+    public TransactionController(TransactionRepository transactionRepository, ProductRepository productRepository,
             UserRepository userRepository, TransactionDetailRepository transactionDetailRepository,
             FranchiseRepository franchiseRepository) {
         this.transactionRepository = transactionRepository;
@@ -57,7 +57,7 @@ public class TransactionController {
 
                 Optional<Product> product = productRepository.findById(productId);
                 if (product == null) {
-                    entity.getTransactionsDetails().remove(detail.getProduct());
+                    entity.getTransactionsDetails().remove((Object)detail.getProduct());
                     continue;
                 }
                 detail.setProduct(product.get());
@@ -76,7 +76,7 @@ public class TransactionController {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(currentDate);
                 List<Transactions> transactionsByUser = transactionRepository.findByUserAndDate(
-                        entity.getUser().getUserId(), calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+                        entity.getUser().getUserId(), calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
                 if (transactionsByUser.size() > 4) {
                     return ResponseEntity
                             .ok(new Response(0, "Ha superado el número máximo (5) de transacciónes el día de hoy"));

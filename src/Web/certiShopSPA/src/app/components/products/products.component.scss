@@ -1,0 +1,12 @@
+.card-products {
+    max-width: 400px;
+    width: calc(100% - 70px);
+    height: calc(100% - 44px);
+    img {
+        width: 100%;
+        height: calc(100% - 110px);
+        margin-top: 16px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

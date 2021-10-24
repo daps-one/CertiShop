@@ -39,7 +39,7 @@ namespace CertiShop.NetCore.Services.Products
                 options.AddPolicy(name: ORIGIN,
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:5001");
+                        builder.WithOrigins("http://localhost:4200");
                     });
             });
             services.AddSwaggerGen(c =>

@@ -1,4 +1,4 @@
-package com.certishop.certishop.Repositories.TransactionRepository;
+package com.certishop.certishop.Repositories;
 
 import java.util.List;
 
@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true, rollbackFor = Exception.class)
-public interface ITransactionRepository extends JpaRepository<Transactions, Integer> {
+public interface TransactionRepository extends JpaRepository<Transactions, Integer> {
     // Optional<Transaction> findByDateAndUser(Date date, Integer userId);
 
-    @Query("SELECT Tra FROM Transactions Tra WHERE userId = :userId AND YEAR(Tra.transactionDate) = :year AND MONTH(Tra.transactionDate) = :month")
-    List<Transactions> findByUserAndDate(Integer userId, Integer year, Integer month);
+    @Query("SELECT Tra FROM Transactions Tra WHERE userId = :userId AND YEAR(Tra.transactionDate) = :year AND MONTH(Tra.transactionDate) = :month AND DAY(Tra.transactionDate) = :day")
+    List<Transactions> findByUserAndDate(Integer userId, Integer year, Integer month, Integer day);
 
     @Transactional
     @Override

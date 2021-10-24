@@ -1,5 +1,8 @@
 package com.certishop.certishop.Entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,26 +10,30 @@ import javax.persistence.*;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="ProductId", nullable=false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ProductId", nullable = false)
     private Integer productId;
 
-    @Column(name="Name", length=50, nullable=false)
+    @Column(name = "Name", length = 50, nullable = false)
     private String name;
 
-    @Column(name="Image", length=1024, nullable=true)
+    @Column(name = "Image", length = 1024, nullable = true)
     private String image;
 
-    @Column(name="UnitPrice", nullable=false)
+    @Column(name = "UnitPrice", nullable = false)
     private Integer unitPrice;
 
-    @Column(name="Description", length=1024, nullable=true)
+    @Column(name = "Description", length = 1024, nullable = true)
     private String description;
 
-    @Column(name="Amount", nullable=false)
+    @Column(name = "Amount", nullable = false)
     private Integer amount;
 
-    public Product() {}
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<TransactionDetail> transactions = new HashSet<TransactionDetail>();
+
+    public Product() {
+    }
 
     public Product(String name, String image, Integer unitPrice, String description, Integer amount) {
         this.name = name;
@@ -38,6 +45,14 @@ public class Product {
 
     public int getProductId() {
         return this.productId;
+    }
+
+    public Set<TransactionDetail> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(Set<TransactionDetail> transactions) {
+        this.transactions = transactions;
     }
 
     public String getName() {

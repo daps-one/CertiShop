@@ -137,7 +137,7 @@ BEGIN
 END
 GO
 
------------------------------------------------------------------------Table dbo.Transaction------------------------------------------------------------------
+-----------------------------------------------------------------------Table dbo.Transactions------------------------------------------------------------------
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -145,22 +145,22 @@ GO
 SET ANSI_PADDING ON
 GO
 
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Transaction]') AND type in (N'U'))
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Transactions]') AND type in (N'U'))
 BEGIN
-	IF NOT EXISTS (SELECT * FROM [dbo].[Transaction])
+	IF NOT EXISTS (SELECT * FROM [dbo].[Transactions])
 	BEGIN
-		DROP TABLE [dbo].[Transaction];
+		DROP TABLE [dbo].[Transactions];
 	END
 END
 
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Transaction]') AND type in (N'U'))
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Transactions]') AND type in (N'U'))
 BEGIN
-	CREATE TABLE [dbo].[Transaction](
+	CREATE TABLE [dbo].[Transactions](
 		[TransactionId] [int] IDENTITY(1,1) NOT NULL,
 		[UserId] [int] NOT NULL,
-		[FranchiseId] [int] NULL,
+		[FranchiseId] [int] NOT NULL,
 		[CreditCardNumber] [varchar](16) NOT NULL,
-		[ExpirationDate] [date] NULL,
+		[ExpirationDate] [date] NOT NULL,
 		[Fees] [int] NOT NULL,
 		[TotalPrice] [int] NOT NULL,
 		[Observations] [varchar](1024) NULL,
@@ -194,9 +194,9 @@ BEGIN
 	CREATE TABLE [dbo].[TransactionDetail](
 		[TransactionDetailId] [int] IDENTITY(1,1) NOT NULL,
 		[TransactionId] [int] NOT NULL,
-		[ProductId] [int] NULL,
+		[ProductId] [int] NOT NULL,
 		[Amount] [int] NOT NULL,
-		[UnitPrice] [int] NULL,
+		[UnitPrice] [int] NOT NULL,
 		[TotalPrice] [int] NOT NULL,
 	CONSTRAINT [PK_TransactionDetail] PRIMARY KEY CLUSTERED
 	(
@@ -207,18 +207,18 @@ END
 GO
 
 -----------------------------------------------------------------------Foreing Keys------------------------------------------------------------------
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Transaction_UserId_User_UserId]') AND parent_object_id = OBJECT_ID('[dbo].[Transaction]'))
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Transaction_UserId_User_UserId]') AND parent_object_id = OBJECT_ID('[dbo].[Transactions]'))
 BEGIN
-	ALTER TABLE [dbo].[Transaction] WITH CHECK ADD CONSTRAINT [FK_Transaction_UserId_User_UserId] FOREIGN KEY ([UserId])
+	ALTER TABLE [dbo].[Transactions] WITH CHECK ADD CONSTRAINT [FK_Transaction_UserId_User_UserId] FOREIGN KEY ([UserId])
 	REFERENCES [dbo].[User] ([UserId])
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Transaction_FranchiseId_Franchise_FranchiseId]') AND parent_object_id = OBJECT_ID('[dbo].[Transaction]'))
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Transaction_FranchiseId_Franchise_FranchiseId]') AND parent_object_id = OBJECT_ID('[dbo].[Transactions]'))
 BEGIN
-	ALTER TABLE [dbo].[Transaction] WITH CHECK ADD CONSTRAINT [FK_Transaction_FranchiseId_Franchise_FranchiseId] FOREIGN KEY ([FranchiseId])
+	ALTER TABLE [dbo].[Transactions] WITH CHECK ADD CONSTRAINT [FK_Transaction_FranchiseId_Franchise_FranchiseId] FOREIGN KEY ([FranchiseId])
 	REFERENCES [dbo].[Franchise] ([FranchiseId])
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
@@ -228,7 +228,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_TransactionDetail_TransactionId_Transaction_TransactionId]') AND parent_object_id = OBJECT_ID('[dbo].[TransactionDetail]'))
 BEGIN
 	ALTER TABLE [dbo].[TransactionDetail] WITH CHECK ADD CONSTRAINT [FK_TransactionDetail_TransactionId_Transaction_TransactionId] FOREIGN KEY ([TransactionId])
-	REFERENCES [dbo].[Transaction] ([TransactionId])
+	REFERENCES [dbo].[Transactions] ([TransactionId])
 	ON UPDATE CASCADE
 	ON DELETE CASCADE;
 END

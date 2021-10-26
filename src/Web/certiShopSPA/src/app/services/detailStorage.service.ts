@@ -27,6 +27,10 @@ export class DetailStorageService {
         localStorage.setItem(this.ITEM_DETAILS, JSON.stringify(details));
     }
 
+    clearStorage() {
+        localStorage.removeItem(this.ITEM_DETAILS);
+    }
+
     removeDetailStorage(productId: number) {
         const details = this.getDetailsStorage();
         const index = details.findIndex(value => value.product.productId == productId);
@@ -43,7 +47,7 @@ export class DetailStorageService {
 
     getDetailsStorage(): TransactionDetail[] {
         const storage = localStorage.getItem(this.ITEM_DETAILS);
-        const json = JSON.parse(storage == null ? '[]' : storage);
+        const json = JSON.parse(storage == null || storage == '' ? '[]' : storage);
         return json;
     }
 }

@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar/snack-bar-config';
 import { Title } from '@angular/platform-browser';
 import { Franchise } from 'src/app/models/Franchise.interface';
+import { Response } from 'src/app/models/Response.interface';
 import { TransactionDetail } from 'src/app/models/TransactionDetail.interface';
 import { DetailStorageService } from 'src/app/services/detailStorage.service';
 import { FranchiseService } from 'src/app/services/franchise.service';
 import { ProductService } from 'src/app/services/product.service';
 import { TransactionService } from 'src/app/services/transaction.service';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -29,8 +33,12 @@ export class CartComponent implements OnInit {
   dateControl = new FormControl('', Validators.required);
   feesControl = new FormControl(0, Validators.required);
 
+  horizontalPosition: MatSnackBarHorizontalPosition = 'right';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
   constructor(private titleService: Title, private detailStorageService: DetailStorageService,
-    private productService: ProductService, private franchiseService: FranchiseService, fb: FormBuilder, private transactionService: TransactionService) {
+    private productService: ProductService, private franchiseService: FranchiseService, fb: FormBuilder,
+    private transactionService: TransactionService, private _snackBar: MatSnackBar, private router: Router) {
     this.titleService.setTitle('CertiShop | Carrito');
     this.options = fb.group({
       identificationControl: this.identificationControl,
@@ -47,9 +55,9 @@ export class CartComponent implements OnInit {
   onSubmit() {
     if (this.options.valid) {
       this.transactionService.saveTransaction({
-        creditCardNumber: this.options.get('identificationControl')?.value,
-        expirationDate: this.options.get('dateControl')?.value,
-        fees: this.options.get('seesControl')?.value,
+        creditCardNumber: this.options.get('creditCardControl')?.value,
+        expirationDate: new Date(this.options.get('dateControl')?.value + '-1'),
+        fees: this.options.get('feesControl')?.value,
         user: {
           identificationNumber: this.options.get('identificationControl')?.value,
           names: this.options.get('namesControl')?.value,
@@ -61,11 +69,21 @@ export class CartComponent implements OnInit {
           description: undefined
         },
         observations: ''
-      }).subscribe(result => {
-        console.log(result);
+      }).subscribe((result: Response) => {
+        this.openSnackBar(result);
+        if (result.status == 1) {
+          setTimeout(() => {
+            this.detailStorageService.clearStorage();
+            this.router.navigateByUrl('/');
+          }, 1000);
+        }
       })
     } else {
-
+      this.openSnackBar({
+        description: 'Formulario incompleto',
+        status: 0,
+        modelId: 0
+      });
     }
   }
 
@@ -73,6 +91,16 @@ export class CartComponent implements OnInit {
     this.getDetails();
     this.getFranchises();
   }
+
+  openSnackBar(response : Response) {
+    const message = response.status == 1 ? `${response.description} (transacción ${response.modelId})` : response.description;
+    this._snackBar.open(message, 'Cerrar', {
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      panelClass: 'mat-snack-bar-color-' + response.status
+    });
+  }
+
 
   getDetails() {
     this.details = this.detailStorageService.getDetailsStorage();
